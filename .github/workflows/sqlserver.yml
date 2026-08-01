@@ -27,6 +27,7 @@ jobs:
   sqlserver-2019:
     name: SQL Server 2019 build and verification
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     env:
       F1SQL_BACKUP_OUTPUT: ${{ github.workspace }}/artifacts/F1SqlPhase5.bak
     steps:
@@ -50,7 +51,7 @@ jobs:
     name: SQL Server 2022 restore-forward
     needs: sqlserver-2019
     runs-on: ubuntu-latest
-    env:
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
