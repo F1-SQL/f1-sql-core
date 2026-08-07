@@ -53,7 +53,9 @@ def test_release_workflow_separates_detection_from_validation() -> None:
 def test_security_automation_is_pinned_and_read_only() -> None:
     workflow = WORKFLOW.parent / "security.yml"
     text = workflow.read_text(encoding="utf-8")
-    assert "pip-audit --strict" in text
+    assert "python -m pip install pip-audit==2.9.0" in text
+    assert "pip-audit --strict ." in text
+    assert "python -m pip install . pip-audit" not in text
     assert "permissions:\n  contents: read" in text
     assert all(
         re.fullmatch(r"[0-9a-f]{40}", sha)
