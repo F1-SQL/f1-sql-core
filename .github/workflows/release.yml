@@ -59,7 +59,7 @@ jobs:
             f1sql detect --github-output "$GITHUB_OUTPUT"
           fi
       - if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: readiness-diagnostics
           path: .f1sql/raw
@@ -87,7 +87,7 @@ jobs:
       - run: pytest -q
       - run: f1sql init "${{ needs.detect.outputs.target }}"
       - if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: validation-diagnostics
           path: .f1sql
@@ -132,12 +132,12 @@ jobs:
             "$GITHUB_WORKSPACE/candidate" \
             "$GITHUB_WORKSPACE/artifacts/F1SqlPhase5.bak" \
             "$GITHUB_WORKSPACE/release-output"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: release-bundle
           path: release-output
           if-no-files-found: error
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: sqlserver-2019-backup
           path: artifacts/F1SqlPhase5.bak
