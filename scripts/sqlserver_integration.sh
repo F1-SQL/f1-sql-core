@@ -29,12 +29,12 @@ sqlcmd() {
 }
 
 for attempt in $(seq 1 60); do
-  logs="$(docker logs "$container_name" 2>&1 || true)"
-  if [[ "$logs" == *"SQL Server is now ready for client connections"* ]]; then
+  if sqlcmd -d master -b -Q "SET NOCOUNT ON; SELECT 1;" >/dev/null 2>&1; then
     break
   fi
   if [ "$attempt" = 60 ]; then
     docker logs "$container_name"
+    echo "SQL Server did not accept sa logins before timeout" >&2
     exit 1
   fi
   sleep 2

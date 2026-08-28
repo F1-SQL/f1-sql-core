@@ -79,6 +79,17 @@ def test_sqlserver_workflow_has_2019_build_and_2022_restore_forward_jobs() -> No
     assert all(re.fullmatch(r"[0-9a-f]{40}", sha) for _, sha in actions)
 
 
+def test_sqlserver_scripts_wait_for_authenticated_connections() -> None:
+    scripts = [
+        WORKFLOW.parents[2] / "scripts" / "sqlserver_integration.sh",
+        WORKFLOW.parents[2] / "scripts" / "sqlserver_restore_forward.sh",
+    ]
+    for script in scripts:
+        text = script.read_text(encoding="utf-8")
+        assert 'sqlcmd -d master -b -Q "SET NOCOUNT ON; SELECT 1;"' in text
+        assert "SQL Server is now ready for client connections" not in text
+
+
 def test_python_workflow_uses_monorepo_checkout() -> None:
     workflow = WORKFLOW.parent / "python.yml"
     text = workflow.read_text(encoding="utf-8")
