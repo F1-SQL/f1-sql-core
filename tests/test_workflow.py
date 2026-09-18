@@ -22,11 +22,18 @@ def test_release_workflow_pins_actions_and_keeps_read_permissions() -> None:
     assert "actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9" in text
 
 
-def test_release_workflow_has_double_opt_in_protected_publish_gate() -> None:
+def test_release_workflow_has_automatic_and_manual_protected_publish_gates() -> None:
     text = WORKFLOW.read_text(encoding="utf-8")
     assert "publish:" in text
-    assert "vars.F1SQL_RELEASE_BUNDLE_READY == 'true'" in text
-    assert "inputs.dry_run != true" in text
+    assert """vars.F1SQL_RELEASE_BUNDLE_READY == 'true' &&
+      (
+        github.event_name == 'schedule' ||
+        (
+          github.event_name == 'workflow_dispatch' &&
+          inputs.dry_run != true &&
+          inputs.publish == true
+        )
+      )""" in text
     assert "name: production" in text
     assert "permissions:\n      contents: write" in text
     assert "gh release create" in text

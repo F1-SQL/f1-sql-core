@@ -9,13 +9,15 @@ up to the newest available round.
 The current workflow's validation job is deliberately non-publishing. It runs
 the offline test suite and initializes an isolated workspace. SQL Server 2019
 loading and SQL Server 2022 restore-forward verification are exercised by the
-separate `sqlserver.yml` workflow. The release workflow has a double opt-in
-publish gate: a maintainer must request `publish=true`, and the protected
-`production` environment must set `F1SQL_RELEASE_BUNDLE_READY=true`. The
-production build now fetches the settled Jolpica round, loads the FastF1 Race
-session, runs quality/reconciliation gates, creates a SQL Server 2019 backup,
-restore-forward verifies it on SQL Server 2022, and uploads `release-bundle`.
-Publication remains skipped fail-closed until the protected flag is enabled.
+separate `sqlserver.yml` workflow. Scheduled runs publish automatically after
+every release gate passes. Manual runs retain a double opt-in: a maintainer must
+set `dry_run=false` and request `publish=true`. Both paths require the protected
+`production` environment and the repository variable
+`F1SQL_RELEASE_BUNDLE_READY=true`. The production build fetches the settled
+Jolpica round, loads the FastF1 Race session, runs quality/reconciliation gates,
+creates a SQL Server 2019 backup, restore-forward verifies it on SQL Server 2022,
+and uploads `release-bundle`. Publication remains fail-closed while the
+repository readiness flag is disabled.
 
 Production candidates are season-to-date snapshots: when round `N` is ready,
 the build fetches and normalizes every settled round from round 1 through `N`.
