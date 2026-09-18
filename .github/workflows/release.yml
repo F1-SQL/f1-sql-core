@@ -159,9 +159,9 @@ jobs:
         run: echo "F1SQL_SQLSERVER_PASSWORD=F1SqlCI!$(openssl rand -hex 16)" >> "$GITHUB_ENV"
       - run: F1SQL_BACKUP_INPUT="$GITHUB_WORKSPACE/artifacts/F1SqlPhase5.bak" bash scripts/sqlserver_restore_forward.sh
 
-  # Publication is deliberately opt-in twice: the dispatch input must be true
-  # and the protected environment variable must be enabled by a maintainer.
-  # Until a production build job uploads `release-bundle`, this job is skipped.
+  # Settled scheduled candidates publish automatically after every gate passes.
+  # Manual dispatches retain the explicit dry-run and publish safeguards.
+  # The repository readiness flag and protected environment can disable either path.
   publish:
     name: Publish immutable release
     needs: [detect, validation, build, restore_forward]
@@ -170,9 +170,15 @@ jobs:
       needs.validation.result == 'success' &&
       needs.build.result == 'success' &&
       needs.restore_forward.result == 'success' &&
-      inputs.dry_run != true &&
-      inputs.publish == true &&
-      vars.F1SQL_RELEASE_BUNDLE_READY == 'true'
+      vars.F1SQL_RELEASE_BUNDLE_READY == 'true' &&
+      (
+        github.event_name == 'schedule' ||
+        (
+          github.event_name == 'workflow_dispatch' &&
+          inputs.dry_run != true &&
+          inputs.publish == true
+        )
+      )
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment:

@@ -64,6 +64,10 @@ The scheduled workflow runs every Tuesday at 06:17 UTC. It asks Jolpica for the
 current UTC season’s race calendar, considers races settled after the configured
 settling period (24 hours by default), and selects the highest settled round
 that is ready. A missed run therefore catches up to the latest available round.
+When a candidate is ready, every validation, build, and restore-forward gate
+must pass before the scheduled run publishes it through the protected
+`production` environment. Set the repository variable
+`F1SQL_RELEASE_BUNDLE_READY=false` to pause automatic publication.
 
 The calendar is obtained from Jolpica; there is no manually maintained calendar
 file in the release path.
@@ -79,9 +83,9 @@ Use **Actions → F1 SQL release pipeline → Run workflow**:
 | Run validation without publishing | checked | unchecked |
 | Request publication after every gate | unchecked | checked |
 
-A production run requires both `dry_run=false` and `publish=true`. Publication
-also requires the protected `production` environment and the environment
-variable:
+A manual production run requires both `dry_run=false` and `publish=true`.
+Scheduled and manual publication also require the protected `production`
+environment and the repository variable:
 
 ```text
 F1SQL_RELEASE_BUNDLE_READY=true
